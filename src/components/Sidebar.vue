@@ -1,4 +1,3 @@
-
 <template>
   <div class="sidebar">
     <div class="workspace">
