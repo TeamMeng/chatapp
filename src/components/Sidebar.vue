@@ -1,14 +1,24 @@
 <template>
   <div class="sidebar">
     <div class="workspace">
-      <div class="workspace-name">{{ workspaceName }}</div>
+      <div class="workspace-name" @click="toggleDropdown">
+        <span>{{ workspaceName }}</span>
+        <button class="dropdown-toggle">&nbsp;▼</button>
+      </div>
+      <div v-if="dropdownVisible" class="dropdown-menu">
+      <ul>
+        <li @click="logout">Logout</li>
+        <!-- Add more dropdown items here as needed -->
+      </ul>
+    </div>
+
       <button class="add-channel" @click="addChannel">+</button>
     </div>
 
     <div class="channels">
       <h2>Channels</h2>
       <ul>
-        <li v-for="channel in channels" :key="channel.id">
+        <li v-for="channel in channels" :key="channel.id" @click="selectChannel(channel.id)" :class="{ active: channel.id === activeChannelId }">
           # {{ channel.name }}
         </li>
       </ul>
@@ -18,8 +28,8 @@
       <h2>Direct Messages</h2>
       <!-- Example of Direct Messages; this could be implemented similarly to channels if needed -->
       <ul>
-        <li v-for="user in directMessages" :key="user.id">
-          <img :src="user.avatar" class="avatar" alt="Avatar" /> {{ user.name }}
+        <li v-for="channel in singleChannels" :key="channel.id"  @click="selectChannel(channel.id)" :class="{ active: channel.id === activeChannelId }">
+          <img :src="`https://ui-avatars.com/api/?name=${channel.recipient.fullname.replace(' ', '+')}`" class="avatar" alt="Avatar" /> {{ channel.recipient.fullname }}
         </li>
       </ul>
     </div>
@@ -28,6 +38,11 @@
 
 <script>
 export default {
+  data() {
+    return {
+      dropdownVisible: false, // Control visibility of the dropdown menu
+    };
+  },
   computed: {
     workspaceName() {
       return this.$store.getters.getWorkspace.name || 'No Workspace';
@@ -35,13 +50,32 @@ export default {
     channels() {
       return this.$store.getters.getChannels;
     },
-    directMessages() {
+    activeChannelId() {
+      const channel = this.$store.state.activeChannel;
+      if (!channel) {
+        return null;
+      }
+      return channel.id;
+    },
+    singleChannels() {
       // Placeholder for direct messages, if needed.
       // This could be another state managed by Vuex.
-      return [];
+      return this.$store.getters.getSingChannels;
     },
   },
   methods: {
+    toggleDropdown() {
+      this.dropdownVisible = !this.dropdownVisible;
+    },
+    logout() {
+      this.$store.dispatch('logout');
+      this.$router.push('/login'); // Redirect to login after logout
+    },
+    handleOutsideClick(event) {
+      if (!this.$el.contains(event.target)) {
+        this.dropdownVisible = false;
+      }
+    },
     addChannel() {
       // Trigger an action to add a new channel
       const newChannel = {
@@ -50,6 +84,15 @@ export default {
       };
       this.$store.dispatch('addChannel', newChannel);
     },
+    selectChannel(channelId) {
+      this.$store.dispatch('setActiveChannel', channelId);
+    },
+  },
+  mounted() {
+    document.addEventListener('click', this.handleOutsideClick);
+  },
+  beforeDestroy() {
+    document.removeEventListener('click', this.handleOutsideClick);
   },
 };
 </script>
@@ -81,6 +124,47 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+
+.dropdown-toggle {
+  background: none;
+  border: none;
+  color: #b9bbbe;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 40px;
+  left: 0;
+  width: 200px;
+  background-color: #2f3136;
+  border: 1px solid #3a3e44;
+  border-radius: 4px;
+  padding: 10px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+}
+
+.dropdown-menu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.dropdown-menu li {
+  padding: 8px;
+  cursor: pointer;
+  color: #b9bbbe;
+}
+
+.dropdown-menu li:hover {
+  background-color: #3a3e44;
+  color: #fff;
 }
 
 .add-channel {
@@ -125,6 +209,12 @@ export default {
   background-color: #3a3e44;
 }
 
+/* Active channel styling */
+.channels li.active {
+  background-color: #5865f2; /* Highlight color for active channel */
+  color: #ffffff;
+}
+
 /* Direct Messages section */
 .direct-messages h2 {
   font-size: 12px;
@@ -149,6 +239,12 @@ export default {
 
 .direct-messages li:hover {
   background-color: #3a3e44;
+}
+
+/* Active channel styling */
+.direct-messages li.active {
+  background-color: #5865f2; /* Highlight color for active channel */
+  color: #ffffff;
 }
 
 .avatar {
