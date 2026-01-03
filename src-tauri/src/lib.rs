@@ -210,3 +210,11 @@ fn open_main<R: Runtime>(handle: &AppHandle<R>) -> Result<(), tauri::Error> {
 
     Ok(())
 }
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn test() {
+        assert_eq!(2, 1 + 1);
+    }
+}

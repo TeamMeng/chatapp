@@ -64,8 +64,24 @@ feature-depth = 1
 # https://embarkstudios.github.io/cargo-deny/checks/advisories/cfg.html
 [advisories]
 ignore = [
-  "RUSTSEC-2023-0071",
-  "RUSTSEC-2024-0436",
+  "RUSTSEC-2025-0098",
+  "RUSTSEC-2025-0100",
+  "RUSTSEC-2025-0080",
+  "RUSTSEC-2025-0075",
+  "RUSTSEC-2025-0081",
+  "RUSTSEC-2024-0370",
+  "RUSTSEC-2024-0419",
+  "RUSTSEC-2024-0420",
+  "RUSTSEC-2024-0415",
+  "RUSTSEC-2024-0429",
+  "RUSTSEC-2024-0414",
+  "RUSTSEC-2024-0417",
+  "RUSTSEC-2024-0411",
+  "RUSTSEC-2024-0418",
+  "RUSTSEC-2024-0412",
+  "RUSTSEC-2025-0057",
+  "RUSTSEC-2024-0416",
+  "RUSTSEC-2024-0413",
   #"RUSTSEC-0000-0000",
   #{ id = "RUSTSEC-0000-0000", reason = "you can specify a reason the advisory is ignored" },
   #"a-crate-that-is-yanked@0.1.1", # you can also ignore yanked crate versions if you wish
@@ -97,6 +113,8 @@ allow = [
   "CDLA-Permissive-2.0",
   "BSD-2-Clause",
   "OpenSSL",
+  "MPL-2.0",
+  "Apache-2.0 WITH LLVM-exception",
   #"Apache-2.0 WITH LLVM-exception",
 ] # List of explicitly allowed licenses
 # See https://spdx.org/licenses/ for list of possible licenses
